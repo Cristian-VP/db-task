@@ -25,7 +25,7 @@ CREATE TABLE COMPANY (
 );
 
 -- Tabla posibles posiciones en la empresa
-CREATE TABLE POSITION (
+CREATE TABLE POSITIONS (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) UNIQUE NOT NULL
 );
@@ -46,7 +46,7 @@ CREATE TABLE EMPLOYEEPOSITION (
     end_date DATE,
     FOREIGN KEY (employee_id) REFERENCES EMPLOYEE(id),
     FOREIGN KEY (company_id) REFERENCES COMPANY(id),
-    FOREIGN KEY (employee_position_id) REFERENCES POSITION(id)
+    FOREIGN KEY (employee_position_id) REFERENCES POSITIONS(id)
 );
 
 -- Tabla Student
