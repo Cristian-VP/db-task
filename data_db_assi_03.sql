@@ -12,7 +12,12 @@ INSERT INTO TEACHER (name, email, phone, subject, salary) VALUES
     ('Tina Rodriguez', 'tina@borjamoll.eu', 968562013, 'Base de datos', 25647.20),
     ('Mel González', 'mel@borjamoll.eu', 671458963, 'Programación', 25647.20),
     ('Rodrigo González', 'rodrigo@borjamoll.eu', 456897456, 'Seguridad Informática', 18695.30),
-    ('Kora Marsé', 'kora@borjamoll.eu', 983645897, 'Estrategias Creativas', 20564.32);
+    ('Kora Marsé', 'kora@borjamoll.eu', 983645897, 'Estrategias Creativas', 20564.32),
+    ('Joana Bermer', 'joana@borjamoll.eu' 971585963, 'Diseño Gráfico', 2158.20),
+    ('Jaume Ripoll', 'jaume@borjamoll.eu', 968457895, 'Instructor de vuelo', 45609.30 ),
+    ('Juan', 'juan@borjamoll.eu', 971565989, 'Docente de restauración', 23456.23),
+    ('Adela', 'adela@borjamoll.eu', 975689456, 'Estrategia de Marketing', 18596.23),
+    ('Jeff Kons', 'jeff@borjamoll.eu', 974586345, 'Gestion Logistica', 18564.69);
 
 -- Tabla Company
 
@@ -126,3 +131,16 @@ INSERT INTO EMPLOYEE (name, email, phone) VALUES
     ('Julio Medina', 'julio.medina@gmail.com', '941234596'),
     ('Valeria Salazar', 'valeria.salazar@gmail.com', '951234597'),
     ('Sergio Vargas', 'sergio.vargas@gmail.com', '961234598');
+
+-- Tabla Student
+CREATE TABLE STUDENT (
+                         id INT AUTO_INCREMENT PRIMARY KEY,
+                         name VARCHAR(250) NOT NULL,
+                         email VARCHAR(250) UNIQUE NOT NULL,
+                         enrollment_date DATE,
+                         teacher_id INT REFERENCES TEACHER(id) ON DELETE SET NULL,
+                         employee_id INT REFERENCES EMPLOYEE(id) ON DELETE SET NULL
+);
+
+INSERT INTO STUDENT (name, email, enrollment_date, teacher_id, employee_id) VALUES
+    ('Alejandro Romero', ''),
