@@ -37,7 +37,6 @@ INSERT INTO POSITIONS (title) VALUES
     -- Transporte Aéreo (e.g., Air Europa)
     ('Piloto'),
     ('Copiloto'),
-    ('Ingeniero de Mantenimiento de Aeronaves'),
     ('Auxiliar de Vuelo'),
 
     -- Hostelería (e.g., Bed Dreams, Barceló Hoteles)
@@ -53,7 +52,7 @@ INSERT INTO POSITIONS (title) VALUES
     ('Desarrollador Backend'),
     ('Desarrollador Frontend'),
     ('Ingeniero de DevOps'),
-    ('Analista de QA'),
+    ('Analista'),
     ('Administrador de Bases de Datos'),
     ('Especialista en UX/UI'),
 
@@ -61,7 +60,6 @@ INSERT INTO POSITIONS (title) VALUES
     ('Director de Marketing'),
     ('Especialista en SEO'),
     ('Copywriter'),
-    ('Ejecutivo de Cuentas'),
     ('Community Manager'),
     ('Diseñador Gráfico'),
 
@@ -70,8 +68,6 @@ INSERT INTO POSITIONS (title) VALUES
     ('Supervisor de Almacén'),
     ('Operador de Montacargas'),
     ('Conductor de Reparto'),
-    ('Planificador de Rutas'),
-    ('Empaquetador'),
 
     -- Ciberseguridad (e.g., ProgersSys)
     ('Analista de Seguridad'),
@@ -82,7 +78,7 @@ INSERT INTO POSITIONS (title) VALUES
     ('Administrador de Redes');
 
 -- Tabla Employee
-
+-- 32 empleados
 INSERT INTO EMPLOYEE (name, email, phone) VALUES
     -- Empleados de Air Europa (Transporte Aéreo)
     ('Pedro Sánchez', 'pedro.sanchez@gmail.com', '651234567'),
@@ -138,9 +134,19 @@ CREATE TABLE STUDENT (
                          name VARCHAR(250) NOT NULL,
                          email VARCHAR(250) UNIQUE NOT NULL,
                          enrollment_date DATE,
-                         teacher_id INT REFERENCES TEACHER(id) ON DELETE SET NULL,
-                         employee_id INT REFERENCES EMPLOYEE(id) ON DELETE SET NULL
+                         teacher_id INT REFERENCES TEACHER(id),
+                         employee_id INT REFERENCES EMPLOYEE(id)
 );
 
 INSERT INTO STUDENT (name, email, enrollment_date, teacher_id, employee_id) VALUES
-    ('Alejandro Romero', ''),
+    ('Alejandro Romero', 'alex@@borjamoll.eu', 2018-05-21, 1, 1),
+    ('Rosario Martínez', 'rosario@borjamoll.eu', 2018-05-21, 2, 4),
+    ('Luis Sagrario','luis@borjamoll.eu', 2018-05-21, 3, 6),
+    ('Martín Martínez', 'marin@borjamoll.eu', 2018-05-21, 5, 3),
+    ('Ferran Llul', 'ferran@borjamoll.eu', 2018-05-21, 4, 2),
+    ('Cristian Perez', 'cristian@borjamoll.eu', 2018-05-21, 15, 20),
+    ('Abimael Sánchez', 'abi@borjamoll.eu', 2018-05-21, 10, 8),
+    ('Lautaro Montò', 'lautaro@borjamoll.eu', 2018-05-21, 11, 21),
+    ('Isabel Gallardo', 'isabel@borjamoll.eu', 2018-05-21, 9, 12),
+    ('Risto Mejide', 'risto@borjamoll.eu', 2018-05-21, 12, 15),
+    ('');
