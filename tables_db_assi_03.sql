@@ -37,6 +37,17 @@ CREATE TABLE EMPLOYEE (
   phone VARCHAR(20)
 );
 
+
+-- Tabla Student
+CREATE TABLE STUDENT (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(250) NOT NULL,
+  email VARCHAR(250) UNIQUE NOT NULL,
+  enrollment_date DATE,
+  teacher_id INT REFERENCES TEACHER(id),
+  employee_id INT REFERENCES EMPLOYEE(id)
+);
+
 -- Asociar posiciones con la tabla empleados dentro de la empresa
 CREATE TABLE EMPLOYEEPOSITION (
     employee_id INT NOT NULL,
@@ -49,12 +60,3 @@ CREATE TABLE EMPLOYEEPOSITION (
     FOREIGN KEY (employee_position_id) REFERENCES POSITIONS(id)
 );
 
--- Tabla Student
-CREATE TABLE STUDENT (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(250) NOT NULL,
-  email VARCHAR(250) UNIQUE NOT NULL,
-  enrollment_date DATE,
-  teacher_id INT REFERENCES TEACHER(id),
-  employee_id INT REFERENCES EMPLOYEE(id)
-);
