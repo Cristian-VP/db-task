@@ -110,4 +110,6 @@ INSERT INTO EMPLOYEEPOSITION (employee_id, company_id, employee_position_id, sta
    (9,9,8, '2023-07-11', NULL),
    (10, 10, 3, NULL, NUll),
    (11,12,11,'2024-10-20', NULL);
-   ();
+
+-- TEST INSERT donde COMPANI.adress = NULL
+INSERT INTO COMPANY (id, name, industry, foundation_year, num_employees, address, phone)
