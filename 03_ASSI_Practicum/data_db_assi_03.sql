@@ -87,16 +87,6 @@ INSERT INTO STUDENT (name, email, enrollment_date, teacher_id, employee_id) VALU
     ('María Teresa', 'maria@borjamoll.eu', '2018-05-21', 11, 11);
 
 -- Asociar posiciones con la tabla empleados dentro de la empresa
-CREATE TABLE EMPLOYEEPOSITION (
-    employee_id INT NOT NULL,
-    company_id INT NOT NULL,
-    employee_position_id INT NOT NULL,
-    start_date DATE,
-    end_date DATE,
-    FOREIGN KEY (employee_id) REFERENCES EMPLOYEE(id),
-    FOREIGN KEY (company_id) REFERENCES COMPANY(id),
-    FOREIGN KEY (employee_position_id) REFERENCES POSITIONS(id)
-);
 
 INSERT INTO EMPLOYEEPOSITION (employee_id, company_id, employee_position_id, start_date, end_date) VALUES
    (1,1, 5, '2024-9-20', NULL ),
@@ -111,5 +101,3 @@ INSERT INTO EMPLOYEEPOSITION (employee_id, company_id, employee_position_id, sta
    (10, 10, 3, NULL, NUll),
    (11,12,11,'2024-10-20', NULL);
 
--- TEST INSERT donde COMPANI.adress = NULL
-INSERT INTO COMPANY (id, name, industry, foundation_year, num_employees, address, phone)

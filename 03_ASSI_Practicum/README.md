@@ -1,0 +1,3 @@
+# Base de Datos: borjamoll
+
+La base de datos **borjamoll** está diseñada para gestionar información educativa y empresarial de una institución. Contiene datos sobre profesores, estudiantes, empleados, posiciones dentro de la empresa y compañías asociadas. Esta estructura permite realizar consultas y análisis de las relaciones entre profesores y estudiantes, así como de empleados en diferentes compañías y posiciones.
