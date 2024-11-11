@@ -63,6 +63,10 @@ SELECT ProductName FROM Products WHERE CategoryID <> 2;
 4. Recupera los nombres de los clientes y sus ciudades, ordenados por `City` en orden descendente.
 5. Muestra las órdenes, ordenadas primero por `EmployeeID` y luego por `OrderDate` de forma ascendente.
  */
-
+SELECT OrderID FROM Orders ORDER BY OrderID ASC;
+SELECT ProductID AS Identificador, ProductName AS Producto, Price FROM Products ORDER BY Price DESC;
+SELECT EmployeeID AS Identificador, Employees.FirstName FROM Employees ORDER BY LastName;
+SELECT CustomerName, City FROM Customers ORDER BY City DESC;
+SELECT OrderID AS Identificador_Pedido FROM Orders ORDER BY EmployeeID, OrderDate;
 
 -- FIN ORDER BY
