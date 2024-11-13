@@ -252,3 +252,28 @@ SELECT MIN(price) FROM Products GROUP BY ProductName;
 SELECT Orders.OrderDate FROM Orders WHERE OrderDate = (SELECT MIN(OrderDate) FROM Orders);
 SELECT 
 --
+-- Average of costumers per country
+
+SELECT AVG(media_cliente) AS media_clientes FROM (SELECT Customers.Country FROM Customers);
+
+-- País y número de clientes del país con el segundo mayor número de clientes.
+SELECT Country, count(*) AS Numero_paises FROM Customers group by Country ORDER BY Numero_paises DESC LIMIT 1 ;
+
+-- Países con el menor número de clientes.
+SELECT Country, COUNT(*) AS Numeros_paises FROM Customers group by Country ORDER BY Numeros_paises
+    fetch first 1 row with ties;
+
+-- Mostrar el país y el número de clientes con el mayor y el menor número de clientes.
+(SELECT Country, COUNT(*) AS Numeros_paises FROM Customers group by Country ORDER BY Numeros_paises DESC
+    fetch first 1 row with ties)
+UNION
+(SELECT Country, COUNT(*) AS Numeros_paises FROM Customers group by Country ORDER BY Numeros_paises
+    fetch first 1 row with ties);
+
+-- Show number of customers that have not placed any order
+SELECT count(CustomerID) FROM Customers WHERE CustomerID NOT IN (SELECT CustomerID FROM Orders);
+
+-- Increase the price of all products by 10%
+UPDATE Products SET Price = Price * 1.1;
+
+-- Select ProductID, ProductName, Price columns of those Products that have a price higher than the average price
