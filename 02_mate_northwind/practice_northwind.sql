@@ -63,10 +63,192 @@ SELECT ProductName FROM Products WHERE CategoryID <> 2;
 4. Recupera los nombres de los clientes y sus ciudades, ordenados por `City` en orden descendente.
 5. Muestra las órdenes, ordenadas primero por `EmployeeID` y luego por `OrderDate` de forma ascendente.
  */
-SELECT OrderID FROM Orders ORDER BY OrderID ASC;
+SELECT OrderID FROM Orders ORDER BY OrderID;
 SELECT ProductID AS Identificador, ProductName AS Producto, Price FROM Products ORDER BY Price DESC;
 SELECT EmployeeID AS Identificador, Employees.FirstName FROM Employees ORDER BY LastName;
 SELECT CustomerName, City FROM Customers ORDER BY City DESC;
 SELECT OrderID AS Identificador_Pedido FROM Orders ORDER BY EmployeeID, OrderDate;
 
 -- FIN ORDER BY
+
+/*
+**5. `AND`**
+
+1. Selecciona los pedidos que fueron realizados por el cliente con `CustomerID = 5` y cuyo `OrderDate` sea posterior a "2023-01-01".
+2. Muestra los productos que tienen un precio mayor a 50 y pertenecen a la categoría con `CategoryID = 3`.
+3. Filtra los empleados que trabajaron después del 1 de enero de 2020 y tienen el apellido "Johnson".
+4. Selecciona las órdenes enviadas por el `ShipperID = 2` y cuyo total de productos sea mayor a 10.
+5. Muestra todos los clientes que se encuentran en "USA" y cuyo código postal comience con "902".
+*/
+SELECT Orders.OrderID AS Peddidos FROM Orders WHERE CustomerID = 5 AND OrderDate > 1996-02-10;
+SELECT ProductID , ProductName FROM Products WHERE Price > 50 AND CategoryID = 3;
+SELECT EmployeeID AS Identificador, FirstName AS Name FROM Employees WHERE LastName  LIKE '%o';
+SELECT OrderID FROM Orders WHERE ShipperID = 2 AND EmployeeID = 1 ORDER BY OrderID;
+SELECT CustomerName FROM Customers WHERE Country = 'USA' AND PostalCode LIKE '9%';
+
+-- FIN AND
+
+/*
+**6. `OR`**
+
+1. Muestra los productos cuyo `Price` sea mayor que 100 o que pertenezcan a la categoría `CategoryID = 2`.
+2. Selecciona los pedidos hechos por los clientes con `CustomerID = 3` o `CustomerID = 8`.
+3. Filtra los empleados que tengan el apellido "Taylor" o trabajen después de 2019.
+4. Muestra los clientes que se encuentran en "USA" o en "Canada".
+5. Obtén los productos cuyo nombre comience con "A" o cuyo precio sea menor que 20.
+ */
+SELECT ProductID AS Identificador ,ProductName FROM Products WHERE Price > 100 OR CategoryID = 2;
+SELECT OrderID FROM Orders WHERE CustomerID = 3 OR CustomerID = 8;
+SELECT FirstName AS Employee, EmployeeID AS Identificador FROM Employees WHERE LastName LIKE '%r%' OR BirthDate > '1966-01-01 00:00:00' ORDER BY Employee;
+SELECT Customers.CustomerName, CustomerID AS Identificador, Country FROM Customers WHERE Country = 'USA' OR Country = 'Canada' ORDER BY Country;
+SELECT Products.ProductName FROM Products WHERE ProductName LIKE 'A%' OR Price < 20;
+-- FIN OR
+
+/*
+**7. `NOT`**
+
+1. Selecciona todos los pedidos donde el `ShipperID` no sea igual a 1.
+2. Muestra los productos cuyo nombre no contenga la palabra "chocolate".
+3. Filtra los empleados cuyo `EmployeeID` no sea 4.
+4. Recupera los clientes cuyo `Country` no sea "Germany".
+5. Muestra las órdenes que no fueron realizadas antes de "1996-12-31".
+ */
+SELECT OrderID FROM Orders WHERE ShipperID <> 1;
+SELECT Products.ProductName FROM Products WHERE ProductName NOT LIKE '%chocolate%';
+SELECT Employees.FirstName, Employees.LastName FROM Employees WHERE NOT EmployeeID =  4;
+SELECT Customers.CustomerName FROM Customers WHERE NOT Country = 'Germany';
+SELECT Orders.OrderID FROM Orders WHERE OrderDate > '1996-12-31';
+-- FIN NOT
+
+/*
+ ### **8. `IN`**
+
+1. Muestra todos los empleados cuyo `EmployeeID` sea 2, 5 o 8.
+2. Filtra los productos que pertenecen a las categorías con `CategoryID = 3, 7, 8`.
+3. Selecciona los pedidos realizados por los clientes con `CustomerID` en la lista (5, 9, 12).
+4. Muestra todos los clientes ubicados en los países "USA", "Canada", o "Mexico".
+5. Recupera las órdenes que fueron realizadas en los años 2020, 2021 o 2022.
+ */
+SELECT EmployeeID, Employees.FirstName, Employees.LastName FROM Employees WHERE EmployeeID IN(2, 5, 8);
+SELECT Products.ProductName AS Producto FROM Products WHERE CategoryID IN (3,7,8);
+SELECT Orders.OrderID FROM Orders WHERE CustomerID IN (5, 9, 12);
+SELECT Customers.CustomerName FROM Customers WHERE Country IN('USA','CANADA','Mexico');
+SELECT Orders.OrderID FROM  Orders WHERE YEAR(OrderDate) IN (2020, 2021, 2022);
+SELECT Orders.OrderID FROM  Orders WHERE MONTH(OrderDate) IN (01, 04);
+SELECT Orders.OrderID FROM  Orders WHERE DAY(OrderDate) IN (11, 24);
+-- IN
+
+/*
+**9. `NULL` (y `IS NULL`)**
+
+1. Muestra todos los productos cuyo campo `Price` es `NULL` en la tabla `Products`.
+2. Filtra los empleados que no tienen una foto registrada.
+3. Selecciona los clientes que no tienen un nombre de contacto .
+4. Muestra todas las órdenes que no tienen un `ShipperID` asignado.
+5. Recupera los productos que no tienen un proveedor asignado .
+ */
+SELECT Products.ProductID FROM Products WHERE Price IS NULL;
+SELECT Employees.FirstName FROM Employees WHERE Photo IS NULL;
+SELECT Customers.CustomerName FROM Customers WHERE ContactName IS NULL;
+SELECT Orders.OrderID FROM Orders WHERE ShipperID IS NULL;
+SELECT Products.ProductName FROM Products WHERE SupplierID is NULL;
+-- FIN NULL
+
+/*
+**10. `UPDATE`**
+
+1. Actualiza el precio de todos los productos en la categoría `CategoryID = 4` a 75.
+2. Cambia el país de todos los clientes con `Country = 'USA'` a "United States of America".
+3. Modifica el apellido del empleado con `EmployeeID = 3` a "Robinson".
+4. Actualiza el `Phone` de un proveedor con `SupplierID = 10` a "555-1234".
+5. Establece el `ShipperID` de las órdenes que fueron enviadas el 01 de enero de 2023 como 3.
+ */
+UPDATE Products SET Price = 0 WHERE CategoryID BETWEEN 4 AND 75;
+UPDATE Customers SET Country = 'United States of America' WHERE Country = 'USA';
+UPDATE Employees SET LastName = 'Robinson' WHERE EmployeeID = 3;
+UPDATE Suppliers SET Phone = '555-1234' WHERE SupplierID = 10;
+UPDATE Orders SET ShipperID = 3 WHERE OrderDate = '2023-01-01';
+-- FIN UPDATE
+
+/*
+**11. `DELETE`**
+
+1. Elimina todos los registros de clientes cuyo `Country` sea "Germany".
+2. Borra todos los productos cuyo precio sea inferior a 10.
+3. Elimina las órdenes que fueron realizadas antes del 1 de enero de 2022.
+4. Elimina los empleados cuyo `EmployeeID` sea mayor que 10.
+
+ */
+DELETE FROM Customers WHERE Country = 'Germany';
+DELETE FROM Products WHERE Price <= 10;
+DELETE FROM Orders WHERE OrderDate < '2022-01-01';
+DELETE FROM Employees WHERE EmployeeID > 10;
+-- DELETE FIN
+
+/*
+*12. `LIMIT`**
+
+1. Selecciona los primeros 5 productos más caros de la tabla `Products`.
+2. Muestra las primeras 10 órdenes realizadas en la tabla `Orders`.
+3. Recupera los primeros 3 clientes de la lista `Customers` según el nombre (`CustomerName`).
+4. Muestra las 5 categorías con más productos en la tabla `Products`.
+5. Recupera los 10 primeros empleados que tengan el apellido "Taylor" de la tabla `Employees`.
+ */
+SELECT Products.ProductName, Price FROM Products ORDER BY Price DESC LIMIT 5;
+SELECT Orders.OrderID FROM Orders LIMIT 10;
+SELECT Customers.CustomerName FROM Customers ORDER BY CustomerName LIMIT 5;
+SELECT CategoryID, ProductName, COUNT(ProductID) AS Suma_productos
+FROM Products
+GROUP BY CategoryID
+ORDER BY Suma_identificador DESC
+LIMIT 5;
+SELECT Employees.LastName FROM Employees WHERE LastName = 'Tayler' LIMIT 10;
+
+-- FIN LIMIT
+
+/*
+ ### **13. `MAX()`**
+
+1. Muestra el precio más alto entre todos los productos de la tabla `Products`.
+2. Recupera la fecha más reciente de un pedido realizado en la tabla `Orders`.
+3. Muestra el salario más alto de los empleados (supón que tienes una columna `Salary`).
+4. Recupera el `ProductID` del producto con el precio más alto.
+5. Obtén el `OrderID` del pedido más reciente realizado.
+ */
+SELECT Products.ProductName, MAX(Products.Price) FROM Products;
+SELECT Orders.OrderDate FROM Orders ORDER BY  OrderDate DESC LIMIT 1;
+SELECT Orders.EmployeeID, Employees.FirstName, MAX(Salary) FROM Employees;
+SELECT Products.ProductID FROM Products WHERE price = (SELECT MAX(Price) FROM Products);
+SELECT Orders.OrderID FROM Orders WHERE OrderDate = (SELECT MAX(Orders.OrderDate) FROM Orders);
+SELECT Orders.OrderID FROM Orders ORDER BY  OrderDate DESC LIMIT 1;
+-- FIN MAX ()
+
+/*
+**14. `COUNT()`**
+
+1. Cuenta cuántos clientes se encuentran en el país "USA".
+2. Muestra el número de productos en la categoría con `CategoryID = 5`.
+3. Cuenta cuántos empleados hay en la tabla `Employees`.
+4. Recupera el número de pedidos realizados por un cliente con `CustomerID = 10`.
+5. Cuenta el número de productos cuyo precio es superior a 100.
+ */
+SELECT COUNT(CustomerID) FROM Customers WHERE Country = 'USA';
+SELECT COUNT(Products.ProductID) FROM Products WHERE CategoryID = '5';
+SELECT COUNT(EmployeeID) FROM Employees;
+SELECT COUNT(Orders.OrderID) FROM Orders WHERE CustomerID= 10;
+SELECT COUNT(Products.ProductID) FROM Products WHERE Price > 100;
+
+-- FIN COUNT()
+
+/*
+ ### **15. `MIN()`**
+1. Muestra el precio más bajo de todos los productos de la tabla `Products`.
+2. Recupera la fecha más antigua de un pedido realizado en la tabla `Orders`.
+3. Obtén el `ProductID` del producto más barato.
+4. Muestra el valor mínimo de `Quantity` de todos los detalles de pedido en la tabla `OrderDetails`.
+5. Recupera el `EmployeeID` con la fecha de nacimiento más temprana.
+ */
+SELECT MIN(price) FROM Products GROUP BY ProductName;
+SELECT Orders.OrderDate FROM Orders WHERE OrderDate = (SELECT MIN(OrderDate) FROM Orders);
+SELECT 
+--
