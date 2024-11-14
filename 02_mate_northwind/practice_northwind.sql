@@ -250,30 +250,134 @@ SELECT COUNT(Products.ProductID) FROM Products WHERE Price > 100;
  */
 SELECT MIN(price) FROM Products GROUP BY ProductName;
 SELECT Orders.OrderDate FROM Orders WHERE OrderDate = (SELECT MIN(OrderDate) FROM Orders);
-SELECT 
+SELECT Products.ProductID FROM Products WHERE Price = (SELECT MIN(Price) FROM Products) LIMIT 1;
+SELECT MIN(OrderDetails.Quantity) FROM OrderDetails;
+SELECT OrderID, MIN(OrderDetails.Quantity) AS CANTIDAD_MINIMA FROM OrderDetails GROUP BY OrderID ORDER BY OrderID;
+
 --
--- Average of costumers per country
+/*
+**16. `AVG()`**
 
-SELECT AVG(media_cliente) AS media_clientes FROM (SELECT Customers.Country FROM Customers);
+1. Muestra el precio promedio de todos los productos en la tabla `Products`.
+2. Recupera el salario promedio de los empleados.
+3. Calcula el número promedio de productos por pedido.
+4. Obtén la cantidad promedio de productos por orden en la tabla `OrderDetails`.
+*/
+SELECT AVG(Price) FROM Products;
+SELECT AVG(Salary) FROM Employees;
 
--- País y número de clientes del país con el segundo mayor número de clientes.
-SELECT Country, count(*) AS Numero_paises FROM Customers group by Country ORDER BY Numero_paises DESC LIMIT 1 ;
+-- A Clientes por país
+SELECT Customers.Country, COUNT(*) AS Numero_Clientes FROM Customers GROUP BY Country;
 
--- Países con el menor número de clientes.
-SELECT Country, COUNT(*) AS Numeros_paises FROM Customers group by Country ORDER BY Numeros_paises
-    fetch first 1 row with ties;
+-- b El pais con más numero de clientes
+SELECT Country, COUNT(*) AS Numero_Clientes FROM Customers GROUP BY Country ORDER BY Numero_Clientes DESC LIMIT 1;
 
--- Mostrar el país y el número de clientes con el mayor y el menor número de clientes.
-(SELECT Country, COUNT(*) AS Numeros_paises FROM Customers group by Country ORDER BY Numeros_paises DESC
-    fetch first 1 row with ties)
+-- C Media de clientes per country
+
+SELECT AVG(Media_Clientes) AS Media_Clientes FROM (SELECT Country, COUNT(*) AS Media_Clientes FROM Customers GROUP BY Country) AS Media_Clientes;
+
+-- E
+
+SELECT Customers.Country, COUNT(*) AS Numero_Clientes
+FROM Customers
+GROUP BY Country ORDER BY Numero_Clientes DESC
+    OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY;
+
+-- F
+
+SELECT Customers.Country, COUNT(*) AS Numero_Clientes
+FROM Customers
+GROUP BY Country ORDER BY Numero_Clientes
+    FETCH NEXT 1 ROWS WITH TIES;
+
+-- G
+(SELECT Customers.Country, COUNT(*) AS Numero_Clientes
+FROM Customers
+GROUP BY Country ORDER BY Numero_Clientes DESC
+    FETCH NEXT ROWS WITH TIES)
 UNION
-(SELECT Country, COUNT(*) AS Numeros_paises FROM Customers group by Country ORDER BY Numeros_paises
-    fetch first 1 row with ties);
+(SELECT Customers.Country, COUNT(*) AS Numero_Clientes
+FROM Customers
+GROUP BY Country ORDER BY Numero_Clientes
+    FETCH NEXT 1 ROWS WITH TIES);
 
--- Show number of customers that have not placed any order
-SELECT count(CustomerID) FROM Customers WHERE CustomerID NOT IN (SELECT CustomerID FROM Orders);
+-- H
 
--- Increase the price of all products by 10%
+SELECT COUNT(CustomerID) AS Customers_With_No_Orders FROM Customers WHERE CustomerID NOT IN (SELECT CustomerID FROM Orders);
+
+-- I
 UPDATE Products SET Price = Price * 1.1;
 
--- Select ProductID, ProductName, Price columns of those Products that have a price higher than the average price
+-- J
+SELECT ProductID, ProductName, Price FROM Products WHERE Price > (
+SELECT AVG(Price) FROM Products);
+
+/*
+ Consulta que muestra los productos más caros, junto con su nombre y precio,
+ de las categorías con CategoryID 2, 3 o 5, pero solo si su precio es mayor a 100, y ordenados por precio en orden descendente
+ */
+SELECT DISTINCT Products.ProductName, Products.Price FROM Products
+WHERE CategoryID IN (2,3,5) AND Price > 100
+ORDER BY Price DESC;
+
+/*
+ Cuenta cuántos productos tienen un precio superior a 50 y pertenecen a las categorías 1, 3, o 4.
+ Devuelve solo el total de productos encontrados
+ */
+
+ SELECT COUNT(*) AS precio_superior FROM Products WHERE CategoryID IN (1,2,3,4) AND Price > 50;
+
+/*
+ Recupera el CustomerID, el nombre del cliente (CustomerName),
+ y el total de productos (en cantidad) que ha comprado un cliente
+ */
+
+SELECT
+    Customers.CustomerID,
+    Customers.CustomerName,
+    COUNT(OrderDetails.Quantity) AS TotalProductos
+FROM
+    Customers, Orders, OrderDetails
+WHERE
+    Customers.CustomerID = Orders.CustomerID
+    AND Orders.OrderID = OrderDetails.OrderID
+GROUP BY
+    Customers.CustomerID, Customers.CustomerName;
+
+/*
+ Muestra todos los productos cuyo nombre contenga las palabras "chocolate" o "vanilla",
+ cuyo precio esté entre 10 y 30, y que pertenezcan a la categoría con CategoryID 3.
+ */
+ SELECT Products.ProductName FROM Products
+     WHERE (ProductName LIKE ('%chocolate%') OR ProductName LIKE ('%vanilla%'))
+        AND Price BETWEEN  10 AND 30
+        AND CategoryID = 3;
+
+/*
+ Obtén los OrderID y ProductID de todos los detalles de pedido, cuyo Quantity sea mayor a 10,
+ pero solo para los pedidos realizados por los clientes con CustomerID 3, 7, o 10.
+ */
+
+SELECT OrderID, ProductID FROM OrderDetails WHERE Quantity > 10 AND OrderID IN (SELECT OrderID FROM Orders WHERE CustomerID IN(3,7,10));
+
+/*
+ Muestra el ProductID y el Price de todos los productos que no tienen un proveedor asignado (SupplierID IS NULL),
+ pero cuyo precio sea menor a 10. Ordena los resultados por Price en orden ascendente.
+ */
+
+SELECT Products.ProductID, Products.Price FROM Products WHERE SupplierID IS NULL AND Price >10 ORDER BY Price;
+
+/*
+ Muestra el nombre del cliente,
+ la ciudad y el país de aquellos clientes cuyo país sea "USA", "Canada" o "Mexico",
+ y cuyo código postal empiece con "902"
+ */
+ SELECT Customers.CustomerName, Customers.Country, Customers.City FROM Customers
+      WHERE Country IN ('USA', 'Canada', 'Mexico')
+        AND PostalCode LIKE '902%';
+
+/*
+ Recupera los productos con el precio promedio más alto de cada categoría.
+ */
+
+ SELECT Products.ProductName, AVG(Products.Price) FROM Products GROUP BY CategoryID;
