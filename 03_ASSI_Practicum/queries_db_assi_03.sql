@@ -158,3 +158,4 @@ ORDER BY COMPANY.name, EMPLOYEE.name DESC;
     SELECT subject, MAX(salary) AS Salario_Maximo FROM TEACHER GROUP BY subject;
     -- MIN ()
     SELECT subject, MIN(salary) AS Salario_Minimo FROM TEACHER GROUP BY subject;
+
