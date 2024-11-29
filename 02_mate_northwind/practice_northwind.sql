@@ -306,7 +306,7 @@ GROUP BY Country ORDER BY Numero_Clientes
 SELECT COUNT(CustomerID) AS Customers_With_No_Orders FROM Customers WHERE CustomerID NOT IN (SELECT CustomerID FROM Orders);
 
 -- I
-UPDATE Products SET Price = Price * 1.1;
+UPDATE Products SET Price = Price * 0.9; 1-0.1 1-0.2
 
 -- J
 SELECT ProductID, ProductName, Price FROM Products WHERE Price > (
@@ -381,3 +381,54 @@ SELECT Products.ProductID, Products.Price FROM Products WHERE SupplierID IS NULL
  */
 
  SELECT Products.ProductName, AVG(Products.Price) FROM Products GROUP BY CategoryID;
+
+/*
+ Muestra los OrderID y la cantidad total de productos vendidos,
+ pero solo para los pedidos con más de 30 productos vendidos.
+ */
+
+SELECT OrderID, Total_productos FROM (SELECT OrderID, COUNT(Quantity)  AS Total_productos FROM OrderDetails GROUP BY OrderID) AS subqueri
+    WHERE Total_productos > 30;
+
+/*
+ Obtén los EmployeeID de los empleados que realizaron más de 5 ventas y cuyo Country no sea "USA" ni "Canada".
+
+ */
+ SELECT EmployeeID, Total_ventas FROM
+      (SELECT EmployeeID, COUNT(OrderID) AS Total_ventas FROM Orders GROUP BY EmployeeID) AS Subqueri
+        WHERE Total_ventas > 5 AND EmployeeID  = (SELECT EmployeeID FROM Employees WHERE FirstName like 'Anne') ;
+
+/*
+ Recupera los productos que tienen un precio superior al promedio de cada categoría.
+ */
+
+ SELECT ProductName, Promedio_categoria, Price FROM
+ (SELECT Productname, AVG(Price) AS Promedio_categoria, Price FROM Products GROUP BY  CategoryID) AS subqueri
+ WHERE Price > Promedio_categoria;
+
+SELECT ProductName,  Price FROM Products
+        WHERE Price > (SELECT AVG(Price) FROM Products WHERE );
+
+/*
+ Muestra los productos cuyo precio sea menor al precio promedio de los productos de su categoría
+ y que pertenezcan a las categorías 3, 5 o 8.
+
+ */
+SELECT Products.ProductName,  Price FROM Products
+WHERE Price < (SELECT AVG(Price) FROM Products WHERE CategoryID=CategoryID);
+
+SELECT Country, count(*) FROM Customers GROUP BY Country;
+SELECT Country, count(*) AS Numero_clientes FROM Customers GROUP BY Country ORDER BY Numero_clientes  DESC LIMIT 1;
+
+
+SELECT AVG(Media_Ciudades) AS Media_ciudades FROM (SELECT Count(*) AS Media_ciudades FROM Customers GROUP BY Country) As queri;
+
+SELECT CONCAT(ProductName, ' Only cost' , Price) AS Advertisiment FROM Products WHERE Price = (SELECT MIN(Price) FROM Products);
+SELECT ProductID, Products.ProductName, Price FROM Products WHERE LENGTH(ProductName) = 8 AND Price  (SELECT Price From Products WHERE Price BETWEEN 10 AND 100);
+SELECT * FROM employee;
+
+-- Intersect: sirve para
+SELECT City FROM Customers
+intersect
+SELECT City From Suppliers
+ORDER BY City;

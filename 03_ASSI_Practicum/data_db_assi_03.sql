@@ -101,3 +101,4 @@ INSERT INTO EMPLOYEEPOSITION (employee_id, company_id, employee_position_id, sta
    (10, 10, 3, NULL, NUll),
    (11,12,11,'2024-10-20', NULL);
 
+DROP DATABASE borjamoll;

@@ -159,3 +159,15 @@ ORDER BY COMPANY.name, EMPLOYEE.name DESC;
     -- MIN ()
     SELECT subject, MIN(salary) AS Salario_Minimo FROM TEACHER GROUP BY subject;
 
+-- Todas las enteriores hay que añadir
+
+-- UNION - EXCEPT - INTERCEPT (No aparece en w3 pero hay que incluirlo);
+
+-- ANY
+
+-- CASE
+
+-- NULL FUNCTIONS
+
+-- INSERT INTO SELCT
+
