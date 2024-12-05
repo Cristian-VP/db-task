@@ -134,8 +134,9 @@ GROUP BY Company.name;
 -- FIN GROUP BY
 
 /*
+HAVING
 1- Muestra todos los empleados cuya empresa tiene más de 2 empleados asignados.
-2- Muestra los estudiantes y el número de profesores que los supervisan, filtrando aquellos con más de 1 maestro.
+2- Muestra los profesores y el número de estudiantes que supervisan, filtrando aquellos con más de 1 estudiante.
 3- Consulta todas las empresas con el número de empleados que tienen, pero filtra solo aquellas que tienen más de 1 empleado.
  */
 -- 1
@@ -143,5 +144,76 @@ SELECT Company.id AS Empresa, COUNT(Employee.company_id) AS Numero_empleados FRO
 JOIN Company ON Employee.company_id = Company.id
 GROUP BY Company.id HAVING Numero_empleados > 2;
 -- 2
-SELECT Student.name,
+SELECT Teacher.name, COUNT(Student.id) AS N_estudiantes
+FROM Student
+JOIN Teacher ON Student.teacher_id = Teacher.id
+GROUP BY Teacher.name
+HAVING N_estudiantes > 1;
 -- 3
+SELECT Company.name, COUNT(Employee.id) AS Numeros_empleados
+FROM Company
+JOIN Employee ON Company.id = Employee.company_id
+GROUP BY Company.name
+HAVING Numeros_empleados > 1;
+-- FIN HAVING
+
+/*
+ EXIST
+1- Realiza una consulta para obtener todos los empleados que están relacionados con alguna empresa y tienen estudiantes asociados.
+2- Obtén una lista de todos los empleados que están asociados a algún estudiante, utilizando EXISTS para verificar la relación.
+3- Muestra todos los estudiantes que están asociados con al menos una empresa, utilizando EXISTS para comprobar si tienen asignada una empresa.
+ */
+-- 1
+SELECT Employee.name
+FROM Employee, Student
+WHERE EXISTS(
+    SELECT Employee.name
+    FROM Employee
+    JOIN Company On Employee.company_id = Company.id
+) AND Employee.id = Student.employee_id
+GROUP BY Employee.name;
+--
+SELECT Employee.name
+FROM Employee
+WHERE EXISTS(
+    SELECT Employee.name
+    FROM Employee, Company, Student
+    WHERE Employee.company_id = Company.id
+    AND Employee.id = Student.employee_id
+    );
+-- Por qué me muestra empleados que tienen valor NULL en compay_id
+SELECT Employee.name
+FROM Employee
+WHERE EXISTS(
+    SELECT Employee.name
+    FROM Employee
+    JOIN Company On Employee.company_id = Company.id
+    JOIN Student ON Employee.id = Student.employee_id
+);
+-- 2
+SELECT Employee.name
+FROM Employee
+WHERE EXISTS ( SELECT 1 FROM Student WHERE Student.employee_id = Employee.id);
+-- 3
+SELECT Student.name
+FROM Student
+WHERE EXISTS (SELECT 1 FROM Employee WHERE Employee.id = Student.employee_id);
+-- FIN EXIST
+
+/*
+ANY
+-- 1 Muestra todos los empleados que trabajan para una empresa que tiene más de 2 empleados, utilizando ANY para comparar los resultados.
+-- 2 Realiza una consulta para obtener los empleados cuyo número de teléfono coincide con alguno de los empleados de la empresa con id 2, usando ANY.
+-- 3 Muestra todos los estudiantes cuyo id de profesor coincide con alguno de los profesores que tiene el email que termina en '@cifpfbmoll.eu'
+ */
+-- 1
+SELECT Employee.name FROM Employee WHERE  > ANY
+     (SELECT COUNT(Employee.company_id) AS Numero_empleados
+      FROM Employee, Company
+      WHERE company_id = Company.id
+      GROUP BY Company.name
+      HAVING Numero_empleados > 2);
+
+-- 2
+-- 3
+-- FIN ANY
