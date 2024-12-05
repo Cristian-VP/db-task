@@ -173,27 +173,11 @@ WHERE EXISTS(
 ) AND Employee.id = Student.employee_id
 GROUP BY Employee.name;
 --
-SELECT Employee.name
-FROM Employee
-WHERE EXISTS(
-    SELECT Employee.name
-    FROM Employee, Company, Student
-    WHERE Employee.company_id = Company.id
-    AND Employee.id = Student.employee_id
-    );
--- Por qué me muestra empleados que tienen valor NULL en compay_id
-SELECT Employee.name
-FROM Employee
-WHERE EXISTS(
-    SELECT Employee.name
-    FROM Employee
-    JOIN Company On Employee.company_id = Company.id
-    JOIN Student ON Employee.id = Student.employee_id
-);
+INSERT INTO Employee (id, name, surname, email, phone, company_id) VALUES (7,'Rosa', 'Maertinez', 'rosa@empresa.com', '633915509', NULL);
 -- 2
 SELECT Employee.name
 FROM Employee
-WHERE EXISTS ( SELECT 1 FROM Student WHERE Student.employee_id = Employee.id);
+WHERE EXISTS ( SELECT '4' FROM Student WHERE Student.employee_id = Employee.id);
 -- 3
 SELECT Student.name
 FROM Student
@@ -207,13 +191,24 @@ ANY
 -- 3 Muestra todos los estudiantes cuyo id de profesor coincide con alguno de los profesores que tiene el email que termina en '@cifpfbmoll.eu'
  */
 -- 1
-SELECT Employee.name FROM Employee WHERE  > ANY
-     (SELECT COUNT(Employee.company_id) AS Numero_empleados
+SELECT Employee.name FROM Employee WHERE  Employee.company_id = ANY
+     (SELECT Company.id
       FROM Employee, Company
       WHERE company_id = Company.id
-      GROUP BY Company.name
-      HAVING Numero_empleados > 2);
-
+      GROUP BY Company.id
+      HAVING COUNT(*) > 2);
 -- 2
+SELECT Employee.name FROM Employee WHERE Employee.phone = ANY
+    (SELECT Employee.id
+     FROM Employee
+     WHERE company_id = 2
+     GROUP BY Employee.id);
 -- 3
+SELECT Student.name FROM Student WHERE Student.teacher_id = ANY (
+    SELECT id
+    FROM Teacher
+    WHERE Student.email LIKE '%@cifpfbmoll.eu'
+);
+INSERT INTO Teacher (id, name, surname, email) VALUES (5, 'Marta', 'Suspiros', 'marta@gmail.com');
+INSERT INTO Student (id, name, surname, email, phone, teacher_id, employee_id) VALUES (12, 'Sebas', 'Ripoll', 'sabas@mail.com', '599897845', 5, 2);
 -- FIN ANY
