@@ -210,5 +210,74 @@ SELECT Student.name FROM Student WHERE Student.teacher_id = ANY (
     WHERE Student.email LIKE '%@cifpfbmoll.eu'
 );
 INSERT INTO Teacher (id, name, surname, email) VALUES (5, 'Marta', 'Suspiros', 'marta@gmail.com');
-INSERT INTO Student (id, name, surname, email, phone, teacher_id, employee_id) VALUES (12, 'Sebas', 'Ripoll', 'sabas@mail.com', '599897845', 5, 2);
+INSERT INTO Student (id, name, surname, email, phone, teacher_id, employee_id)
+VALUES (12, 'Sebas', 'Ripoll', 'sabas@mail.com', '599897845', 5, NULL);
+INSERT INTO Student (id, name, surname, email, phone, teacher_id, employee_id)
+VALUES (13, 'Raquel', 'Jimenez', 'raquel@mail.com', '599897845', NULL, NULL);
 -- FIN ANY
+
+/*
+ INSERT INTO SELECT
+1- Inserta en la tabla Student los estudiantes cuyos profesores son del id 1 o 2, seleccionando los datos de las tablas Student y Teacher.
+2- Realiza una inserción en la tabla Employee tomando los datos de los empleados que están asociados con empresas cuyo nombre contiene la palabra "Barcelo".
+3- Inserta nuevos registros en la tabla Student con los datos de los estudiantes cuyos empleados trabajan en la empresa "AirEuropa".
+ */
+-- 1
+INSERT INTO Student (id, name, surname, email, phone, teacher_id, employee_id)
+SELECT Student.id+13, Student.name, Student.surname, Student.email, Student.phone, Student.teacher_id, Student.employee_id
+FROM Student
+JOIN Teacher ON Student.teacher_id = Teacher.id
+WHERE Teacher.id = 1 OR Teacher.id=2;
+-- 2
+INSERT INTO  Employee (id, name, surname, email, phone, company_id)
+SELECT e.id+7, e.name, e.surname, e.email, e.phone, e.company_id
+FROM Employee e
+JOIN Company ON e.company_id = Company.id
+WHERE Company.name = 'Barcelo';
+-- 3
+INSERT INTO Student (id, name, surname, email, phone, teacher_id, employee_id)
+SELECT Student.id+100, Student.name, Student.surname, Student.email, Student.phone, Student.teacher_id, Student.employee_id
+FROM Student
+JOIN Employee ON Student.employee_id = Employee.id
+JOIN Company ON Employee.company_id = Company.id
+WHERE Company.name = 'AirEuropa';
+--
+DELETE FROM Student
+WHERE Student.id > 11;
+
+/*
+ CASE
+1- Muestra el nombre de todos los empleados junto con una clasificación de "Activo" si su teléfono está registrado, o "Inactivo" si no tienen teléfono, utilizando CASE.
+2- Realiza una consulta para mostrar el nombre de todos los estudiantes y su empresa asignada, con un mensaje que indique "Sin empresa" si no tienen una empresa asociada, utilizando CASE.
+3- Muestra los nombres de todos los profesores junto con una etiqueta "Tienen estudiantes" si tienen al menos un estudiante asignado, utilizando CASE.
+*/
+-- 1
+SELECT Employee.name,
+CASE
+    WHEN Employee.phone IS NULL THEN 'Inactivo'
+    ELSE 'Activo'
+END AS Telefono_empleados
+FROM Employee;
+-- 2
+SELECT Student.name,
+CASE
+    WHEN Student.employee_id IS NULL THEN 'Sin Empresa'
+    ELSE Company.name
+END AS Estado_empresa
+FROM Student
+LEFT JOIN Employee ON Student.employee_id = Employee.id
+LEFT JOIN Company ON Employee.company_id = Company.id;
+-- 3
+SELECT Teacher.name AS PROFE,
+CASE
+    WHEN COUNT(Student.teacher_id)  >= 1 THEN 'Tiene estudiantes'
+    ELSE 'No tiene estudiantes'
+END AS Asignación_Estudiantes
+FROM Teacher
+LEFT JOIN Student ON Teacher.id = Student.teacher_id
+GROUP BY Teacher.name;
+
+
+
+
+
