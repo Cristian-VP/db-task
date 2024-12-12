@@ -432,3 +432,125 @@ SELECT City FROM Customers
 intersect
 SELECT City From Suppliers
 ORDER BY City;
+
+-- Find the number of cities with customers or suppliers. Use UNION.
+SELECT COUNT(DISTINCT City)
+FROM (
+    SELECT City FROM Customers
+    UNION
+    SELECT City FROM Suppliers
+     ) AS ciudades_combinadas;
+
+-- Find the number of cities with customers and no suppliers. Use EXCEPT.
+SELECT COUNT(DISTINCT City)
+FROM (
+         SELECT City FROM Customers
+         EXCEPT
+         SELECT City FROM Suppliers
+     ) AS ciudades_combinadas;
+
+-- Find the number of cities with customers and suppliers. Use INTERSECT.
+SELECT COUNT(DISTINCT City)
+FROM (
+         SELECT City FROM Customers
+         INTERSECT
+         SELECT City FROM Suppliers
+     ) AS ciudades_combinadas;
+
+-- Rewrite the following query using an explicit JOIN.
+SELECT A.CustomerName AS CustomerName1, B.CustomerName AS CustomerName2, A.City
+FROM Customers A
+JOIN Customers B ON A.City = B.City
+WHERE A.CustomerID < B.CustomerID
+ORDER BY A.City;
+
+-- Find the OrderID, OrderDate and total_amount of the orders. List only those orders with a total amount larger than 10000.
+SELECT O.OrderID, O.OrderDate, COUNT(D.Quantity) AS total_amount
+FROM Orders O
+JOIN OrderDetails D ON O.OrderID = D.OrderID
+GROUP BY O.OrderID;
+
+-- Ramdom queries 10
+
+-- 5 Find the OrderID, OrderDate and total_amount of the orders. List only those orders with a total amount larger than 10000.
+SELECT o.OrderID, o.OrderDate, SUM(p.Price*od.Quantity) AS total_amount
+FROM Orders o
+         JOIN OrderDetails od ON od.OrderID = o.OrderID
+         JOIN Products p ON od.ProductID = p.ProductID
+GROUP BY o.OrderID
+HAVING SUM(p.Price*od.Quantity) > 10000;
+
+-- 6 Find the names of the customers that have not placed any order using the keywords NOT EXISTS.
+SELECT c.CustomerName
+FROM Customers c
+WHERE NOT EXISTS(
+    SELECT * FROM Orders o WHERE o.CustomerID = c.CustomerID
+);
+
+-- 7 Find all the product names and prices of products that have a price higher than any of the products of the supplier with SupplierID = 1. Order by price. Limit the result to 5 lines.
+SELECT p.ProductName, p.Price
+FROM Products p
+WHERE p.Price > ANY(
+    SELECT P.Price
+    FROM Products P
+    WHERE P.SupplierID = 1
+)
+ORDER BY p.Price
+LIMIT 5;
+
+-- 8 Find all the product names and prices of products that have a price higher than any of the products of the supplier "Exotic Liquid". Order by price. Limit the result to 5 lines.
+SELECT p.Productname, p.Price
+FROM Products p
+WHERE p.Price > ANY (
+    SELECT P.Price
+    FROM Products P
+    JOIN Suppliers ON P.SupplierID = Suppliers.SupplierID
+    WHERE Suppliers.SupplierName = 'Exotic Liquid'
+)
+ORDER BY Price
+LIMIT 5;
+
+-- 9 List all product names. After the name, there has to be a column called 'Cheap or Expensive'. The value of this column has to be 'Cheap' if the value is smaller than 20 and 'Expensive' otherwise. Order by ProductName. Show the first 10 results.
+SELECT p.ProductName,
+       CASE
+           WHEN p.Price <= 20 THEN 'Cheap'
+           ELSE 'Expensive'
+       END AS 'Cheap or Expensive'
+FROM Products p
+ORDER BY ProductName
+LIMIT 10;
+
+-- 10 Show the customer name and the total expense of those customers that have spent more than 20000.
+SELECT c.CustomerName, SUM(od.Quantity*p.Price) AS total_expense
+FROM Customers c
+    JOIN Orders o ON c.CustomerID = o.CustomerID
+    JOIN OrderDetails od On o.OrderID = od.OrderID
+    JOIN Products p On od.ProductID = p.ProductID
+GROUP BY c.CustomerName
+HAVING total_expense > 20000;
+
+-- 11 List the product name and price of the products that are more expensive than all the products of the supplier "Tokyo Traders".
+SELECT p.ProductName, p.Price
+FROM Products p
+JOIN Suppliers s On p.SupplierID = s.SupplierID
+WHERE p.Price > ALL
+      ( SELECT p.price
+        FROM Products p
+        JOIN Suppliers s ON p.SupplierID = s.SupplierID
+        WHERE SupplierName = 'ToKyo Traders'
+        GROUP BY p.ProductName
+        );
+
+-- 12 Show the customer names and their orders. If a customer has no orders show the string 'no orders'. Order by CustomerName. List only the first 5 lines.
+SELECT c.CustomerName, COALESCE(o.OrderID, 'no orders') AS OrderID
+FROM Customers c
+LEFT JOIN Orders o On c.CustomerID = o.CustomerID
+LIMIT 5;
+
+-- 13.- Show employee's FirstName and LastName and the OrderID for those employees that were born before '1955-01-01'. All the employees that satisfy this restriction should be shown. If the employee has not participated in any order, the column Order ID must show "no orders". The name of the last column is OrderID_if_any.
+
+
+
+
+
+

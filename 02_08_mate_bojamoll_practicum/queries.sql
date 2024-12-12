@@ -277,6 +277,22 @@ FROM Teacher
 LEFT JOIN Student ON Teacher.id = Student.teacher_id
 GROUP BY Teacher.name;
 
+/*
+COALESCE
+
+1-- Muestra el nombre y correo de los estudiantes, y en caso de que no tengan teléfono, utiliza COALESCE para mostrar el mensaje "Teléfono no disponible".
+2-- Realiza una consulta para obtener el nombre de los empleados y, si no tienen empresa asignada, utilizar COALESCE para mostrar el mensaje "Empresa no asignada".
+3--
+ */
+-- 1
+SELECT Student.name, Student.email, COALESCE(Student.phone, 'Teléfono no disponible') AS Phone
+FROM Student;
+-- 2
+SELECT E.name, COALESCE(C.name, 'Empresa no asignada')
+FROM Employee E
+LEFT JOIN Company C ON E.company_id = C.id;
+-- 3
+
 
 
 
