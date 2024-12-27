@@ -1,0 +1,3 @@
+-- CREATE
+CREATE DATABASE titanicDB;
+USE titanicDB;
