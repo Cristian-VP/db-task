@@ -1,0 +1,52 @@
+Survival,Name,Gender,Age,SiblingsAndSpouses,ParentsAndChildren,TicketNumber,PortCode,PassengerFare
+1,John Jacob Astor,male,47,1,0,T100,C,150
+0,Edith Louise Vivand,female,24,0,1,T101,S,50
+1,Isidor Straus,male,67,1,0,T102,Q,30
+0,Thomas Andrews,male,39,2,1,T103,C,120
+1,Margaret Brown,female,44,0,1,T104,S,80
+0,Eva Hart,female,7,0,0,T105,Q,40
+1,Henry S. Harris,male,58,1,0,T106,C,110
+0,John B. Thayer,male,49,0,2,T107,S,130
+1,Archibald Gracie,male,53,2,0,T108,Q,90
+0,William Thomas Stead,male,62,1,1,T109,C,150
+1,Mary Hays,female,53,1,0,T110,S,75
+1,Frederick H. W. Holst,female,34,0,1,T111,Q,55
+0,Lucille F. O'Riley,female,45,1,0,T112,S,45
+1,Alice Mary Cooks,female,20,1,12,T113,C,90
+0,Albert Hickman,male,25,0,0,T114,Q,100
+1,Lily May,Mckowen,2,26,1,T115,C,60
+0,George D. Behr,male,37,2,1,T116,S,80
+1,Edgar J. Meyer,male,29,0,0,T117,C,95
+0,Charles Melville Hays,male,58,1,0,T118,Q,150
+1,Kate H. Smith,female,45,1,0,T119,S,70
+0,J. Bruce Ismay,male,54,1,1,T120,C,130
+1,Gertrude Van Der Hoef,female,21,0,0,T121,S,85
+1,James Farrell,male,41,0,0,T122,Q,120
+0,Edward F. Kent,male,47,0,2,T123,C,140
+1,Thomas Henry Solman,male,34,0,1,T124,S,110
+0,Louise L. Allum,female,35,0,1,T125,Q,100
+1,Susanna M. Leach,female,44,1,0,T126,C,60
+0,Edward D. Austin,male,42,0,0,T127,S,80
+1,Virginia L. Caulfield,female,35,1,0,T128,Q,75
+0,William T. Gawen,male,26,2,0,T129,C,130
+1,Mary McDermott,female,18,0,0,T130,S,55
+1,Alfred N. Bower,male,40,0,1,T131,Q,120
+0,Josephine Young,female,34,1,0,T132,C,110
+1,John W. Barrett,male,41,0,0,T133,S,100
+0,William McGowan,male,39,2,0,T134,Q,125
+1,Barbara McNaught,female,23,1,0,T135,C,95
+0,Edwin F. North,female,22,1,0,T136,S,45
+1,Mabel Courtney,female,30,1,0,T137,Q,70
+1,Mary S. Fowle,female,28,0,1,T138,C,80
+0,Frank H. Brown,male,55,1,0,T139,S,115
+1,Marguerite R. Nicholls,female,19,2,0,T140,Q,90
+0,Henry George Stoddard,male,49,1,1,T141,C,105
+1,"Florence ""Flora"" Ward",female,31,1,0,T142,S,60
+1,Hilda L. Ziegler,female,27,1,1,T143,Q,65
+0,Samuel H. Becher,male,42,0,0,T144,C,120
+1,Amelia Graham,female,25,2,0,T145,S,100
+0,Robert W. Durning,male,39,1,0,T146,Q,135
+1,Louise Paton,female,18,1,0,T147,C,110
+0,Ernest Stewart,male,48,1,1,T148,S,75
+1,Gertrude Anson,female,32,0,0,T149,Q,90
+1,Joseph R. Kenyon,male,29,2,1,T150,C,85
