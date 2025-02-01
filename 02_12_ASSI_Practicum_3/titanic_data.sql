@@ -57,3 +57,6 @@ INSERT INTO cabins (CabinNumber, Deck) VALUES
 ('H09', 'Deck H'),
 ('I20', 'Deck I'),
 ('J50', 'Deck J');
+
+mariadb-dump --user=admin_user --password --lock-tables --databases borjamoll > /data/bck/bck1.sql
+

@@ -23,7 +23,10 @@ DROP TABLE cabin_assignments;
 -- ALTER TABLE
     -- ADD CHECK
     ALTER TABLE passengers
-    ADD CHECK ( passengers.PassengerFare >= 0);
+    ADD CHECK (passengers.PassengerFare >= 0);
+
+    ALTER TABLE passengers
+    ALTER PassengerFare SET DEFAULT '0';
 
     -- ADD UNIQUE
     ALTER TABLE cabins

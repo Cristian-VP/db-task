@@ -383,6 +383,79 @@ SELECT Products.ProductID, Products.Price FROM Products WHERE SupplierID IS NULL
  SELECT Products.ProductName, AVG(Products.Price) FROM Products GROUP BY CategoryID;
 
 /*
+ INNER JOIN
+1-Encuentra los nombres de los productos y las categorías a las que pertenecen.
+2-Lista los pedidos realizados por los clientes y los nombres de estos.
+3-Muestra los empleados y los pedidos que gestionaron.
+4. Encuentra los pedidos y los nombres de los transportistas que los entregaron.
+*/
+-- 1
+SELECT Products.ProductName,  Categories.CategoryName
+FROM Products
+INNER JOIN Categories ON Products.CategoryID = Categories.CategoryID;
+-- 2
+SELECT Customers.CustomerName, COUNT(Orders.OrderID) AS PEDIDOS_REALIZADOS
+FROM Customers
+INNER JOIN Orders ON Customers.CustomerID = Orders.CustomerID
+GROUP BY CustomerName;
+-- 3
+SELECT Employees.FirstName, COUNT(Orders.OrderID) AS Pedidos_gestionados
+FROM Employees
+INNER JOIN Orders ON Employees.EmployeeID = Orders.EmployeeID
+GROUP BY Employees.FirstName ;
+-- 4
+SELECT  Orders.OrderID,  Shippers.ShipperName
+FROM Orders
+INNER JOIN Shippers ON Orders.ShipperID = Shippers.ShipperID;
+-- FIN INNER JOIN
+
+
+ /*
+  LEFT JOIN
+1- Muestra todos los productos, incluso si no tienen categoría asignada.
+2- Lista todos los pedidos, incluyendo aquellos sin transportista asignado.
+3- Encuentra todos los clientes, incluso los que no han realizado pedidos.
+  */
+-- 1
+SELECT Products.ProductName, Categories.CategoryName
+FROM Products
+LEFT JOIN Categories ON Products.CategoryID = Categories.CategoryID;
+-- 2
+SELECT Orders.OrderID, Shippers.ShipperID
+FROM Orders
+LEFT JOIN Shippers ON Orders.ShipperID = Shippers.ShipperID;
+-- 3
+SELECT Customers.CustomerName, Orders.OrderID
+FROM Customers
+LEFT JOIN Orders ON Customers.CustomerID = Orders.CustomerID;
+-- FIN LEFT JOIN
+
+/*
+RIGHT JOIN
+1- Lista todas las categorías y los productos que contienen, incluso si no hay productos en alguna categoría.
+2- Encuentra todos los pedidos y los empleados responsables, incluyendo pedidos sin empleado asignado.
+3- Lista todos los clientes junto con los pedidos que han realizado, incluyendo los clientes que no han hecho ningún pedido.
+ */
+-- 1
+SELECT Categories.CategoryName, COUNT(Products.CategoryID) AS Productos_por_categoria
+FROM Categories
+RIGHT JOIN Products ON Categories.CategoryID = Products.CategoryID
+GROUP BY Categories.CategoryName ;
+-- 2
+SELECT Orders.OrderID, Employees.FirstName
+-- 3
+-- FIN
+
+
+/*
+
+ */
+-- 1
+-- 2
+-- 3
+-- FIN
+
+/*
  Muestra los OrderID y la cantidad total de productos vendidos,
  pero solo para los pedidos con más de 30 productos vendidos.
  */

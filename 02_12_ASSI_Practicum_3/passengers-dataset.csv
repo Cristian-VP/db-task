@@ -1,5 +1,5 @@
 Survival,Name,Gender,Age,SiblingsAndSpouses,ParentsAndChildren,TicketNumber,PortCode,PassengerFare
-1,John Jacob Astor,male,47,1,0,T100,C,150
+0,John Jacob Astor,male,47,1,0,T100,C,150
 0,Edith Louise Vivand,female,24,0,1,T101,S,50
 1,Isidor Straus,male,67,1,0,T102,Q,30
 0,Thomas Andrews,male,39,2,1,T103,C,120
