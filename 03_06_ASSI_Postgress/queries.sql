@@ -332,11 +332,212 @@
     -- Drop Function
     DROP FUNCTION get_movie_title(INT);
 
+-- EXCEPTION HANDLING
+DO $$
+DECLARE
+    v_film_title TEXT;
+BEGIN
+    BEGIN
+        SELECT title INTO v_film_title
+        FROM film
+        WHERE film_id = 99999; -- ID inexistente
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RAISE NOTICE 'Error: No se encontró la película con el ID especificado.';
+        WHEN OTHERS THEN
+            RAISE NOTICE 'Error desconocido: %', SQLERRM;
+    END;
+    RAISE NOTICE 'Finalizando bloque de manejo de excepciones.';
+END $$;
 
+-- Catching Any Generic Error
+DO $$
+BEGIN
+    BEGIN
+        PERFORM 1 / 0;
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE NOTICE 'Error capturado: %', SQLERRM;
+    END;
+END $$;
 
+-- Catching a Specific Error
+DO $$
+BEGIN
+    BEGIN
+        INSERT INTO film (title) VALUES (NULL);
+    EXCEPTION
+        WHEN null_value_not_allowed THEN
+            RAISE NOTICE 'Error: No se pueden insertar valores nulos en el título de la película.';
+    END;
+END $$;
 
+-- Handling Exceptions in Nested Blocks
+DO $$
+BEGIN
+    BEGIN
+        BEGIN
+            SELECT 1/0;
+        EXCEPTION
+            WHEN division_by_zero THEN
+                RAISE NOTICE 'Error interno: División por cero.';
+        END;
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE NOTICE 'Error externo: %', SQLERRM;
+    END;
+END $$;
 
+-- Using EXCEPTION to Roll Back Transactions
+DO $$
+BEGIN
+    BEGIN
+        INSERT INTO film (title) VALUES ('Nueva Película');
+        RAISE EXCEPTION 'Simulando un error, revirtiendo transacción.';
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            RAISE NOTICE 'Transacción revertida debido a error: %', SQLERRM;
+    END;
+END $$;
 
+-- STORED PROCEDURES
+CREATE OR REPLACE PROCEDURE simple_procedure()
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RAISE NOTICE 'Ejecutando un procedimiento almacenado simple.';
+END;
+$$;
 
+-- Stored Procedure with Input Parameters
+CREATE OR REPLACE PROCEDURE insert_movie(p_title TEXT, p_year INT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO film (title, release_year) VALUES (p_title, p_year);
+    RAISE NOTICE 'Película % insertada.', p_title;
+END;
+$$;
 
+-- Stored Procedure with Input and Output Parameters
+CREATE OR REPLACE PROCEDURE get_movie_count(IN category_name TEXT, OUT movie_count INT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    SELECT COUNT(*) INTO movie_count FROM film_category fc
+    JOIN category c ON fc.category_id = c.category_id
+    WHERE c.name = category_name;
+END;
+$$;
 
+-- Stored Procedure with Transactions
+CREATE OR REPLACE PROCEDURE transactional_procedure()
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    BEGIN
+        INSERT INTO film (title) VALUES ('Nueva Película Transaccional');
+        COMMIT;
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            RAISE NOTICE 'Transacción revertida.';
+    END;
+END;
+$$;
+
+-- CURSORS
+DO $$
+DECLARE
+    cur CURSOR FOR SELECT title FROM film WHERE release_year > 2000;
+    v_title TEXT;
+BEGIN
+    OPEN cur;
+    LOOP
+        FETCH cur INTO v_title;
+        EXIT WHEN NOT FOUND;
+        RAISE NOTICE 'Película: %', v_title;
+    END LOOP;
+    CLOSE cur;
+END $$;
+
+-- Cursor with Parameters
+DO $$
+DECLARE
+    cur CURSOR (year_param INT) FOR SELECT title FROM film WHERE release_year > year_param;
+    v_title TEXT;
+BEGIN
+    OPEN cur(2010);
+    FETCH cur INTO v_title;
+    CLOSE cur;
+    RAISE NOTICE 'Película después del 2010: %', v_title;
+END $$;
+
+-- Cursor with FETCH FORWARD and MOVE
+DO $$
+DECLARE
+    cur CURSOR FOR SELECT title FROM film;
+    v_title TEXT;
+BEGIN
+    OPEN cur;
+    MOVE FORWARD 5 IN cur;
+    FETCH cur INTO v_title;
+    CLOSE cur;
+    RAISE NOTICE 'Sexta película en la lista: %', v_title;
+END $$;
+
+-- TRIGGERS
+CREATE OR REPLACE FUNCTION before_insert_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.created_at := now();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER before_insert_film
+BEFORE INSERT ON film
+FOR EACH ROW
+EXECUTE FUNCTION before_insert_trigger();
+
+-- AFTER INSERT Trigger for Logging
+CREATE OR REPLACE FUNCTION after_insert_log()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO film_log (film_id, action) VALUES (NEW.film_id, 'INSERT');
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_insert_film
+AFTER INSERT ON film
+FOR EACH ROW
+EXECUTE FUNCTION after_insert_log();
+
+-- BEFORE UPDATE Trigger to Prevent Changes
+CREATE OR REPLACE FUNCTION before_update_restrict()
+RETURNS TRIGGER AS $$
+BEGIN
+    RAISE EXCEPTION 'No se permite actualizar la tabla film directamente.';
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER before_update_film
+BEFORE UPDATE ON film
+FOR EACH ROW
+EXECUTE FUNCTION before_update_restrict();
+
+-- AFTER DELETE Trigger for Logging Deletions
+CREATE OR REPLACE FUNCTION after_delete_log()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO film_log (film_id, action) VALUES (OLD.film_id, 'DELETE');
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_delete_film
+AFTER DELETE ON film
+FOR EACH ROW
+EXECUTE FUNCTION after_delete_log();
