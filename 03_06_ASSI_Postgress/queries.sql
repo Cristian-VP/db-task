@@ -92,25 +92,20 @@
     END $$;
 
     -- ASSERT
-    DO $$
+     DO $$
     DECLARE
-        film_name CONSTANT varchar(50) := split_part('Frankenstain Rigoberto', ' ', 1);
+        film_name CONSTANT varchar(250) := split_part('Frankenstain Rigoberto', ' ', 1);
         film_year timestamp := clock_timestamp();
         money_spend CONSTANT numeric(10,2) := 56000.54;
         max_budget CONSTANT numeric(10,2) := 50000.00; -- Presupuesto máximo
     BEGIN
         -- Verificación con ASSERT
-        ASSERT money_spend > max_budget , 'Error: El gasto de la película % excede el presupuesto máximo de %. Gasto actual: %'
+        IF money_spend > max_budget THEN
+			RAISE NOTICE 'Error: El gasto de la película % excede el presupuesto máximo de %. Gasto actual: %', film_name, max_budget, money_spend;
+		END IF;
 
+		ASSERT money_spend < max_budget;
         RAISE NOTICE 'Primer bloque: La película % fue rodada en % y costó %', film_name, film_year, money_spend;
-
-        DECLARE
-            movie_category varchar(255) := 'Funny';
-        BEGIN
-            RAISE NOTICE 'Segundo bloque: Esta categorizada como % y se ha revalorizado en: %', movie_category, money_spend + 1000;
-        END;
-
-        RAISE NOTICE 'Salgo del sub-bloque';
     END $$;
 
 -- Fin Reporting messages and errors
@@ -121,30 +116,29 @@
     DO $$
     DECLARE
         rental_count INT;
-        customer_id INT := 20;
+        v_customer_id INT := 20;
     BEGIN
         SELECT COUNT(*)
         INTO rental_count
         FROM rental
-        WHERE customer_id = customer_id;
-
+        WHERE rental.customer_id = v_customer_id;
         IF rental_count > 10 THEN
-            RAISE NOTICE 'El cliente % ha alquilado más de 10 películas.', customer_id;
+            RAISE NOTICE 'El cliente % ha alquilado más de 10 películas.', v_customer_id;
         ELSE
-            RAISE NOTICE 'El cliente % ha alquilado % películas.', customer_id, rental_count;
+            RAISE NOTICE 'El cliente % ha alquilado % películas.', v_customer_id, rental_count;
         END IF;
     END $$;
 
     -- CASE
     DO $$
     DECLARE
-    customer_id INT := 4;
+    v_customer_id INT := 4;
     rental_count INT;
     type_of_client varchar(250);
     BEGIN
     SELECT COUNT(*) INTO rental_count
     FROM rental
-    WHERE customer_id = customer_id;
+    WHERE rental.customer_id = v_customer_id;
     IF rental_count > 0 THEN
         -- Clasificación del cliente
         CASE
@@ -155,8 +149,7 @@
             ELSE
                 type_of_client := 'Cliente que adoro, viene todas las semanas';
         END CASE;
-
-        RAISE NOTICE 'El cliente % es clasificado como %.', customer_id, type_of_client;
+        RAISE NOTICE 'El cliente % es clasificado como %.', v_customer_id, type_of_client;
     ELSE
         RAISE NOTICE 'Customer not found';
     END IF;
@@ -172,12 +165,13 @@
         SELECT title
         FROM film
         WHERE title LIKE 'E%'
-    << counter_loop >>
     LOOP
         counter := counter + 1;
-        RAISE NOTICE '%', counter;
-        EXIT WHEN counter_loop = 4;
+        RAISE NOTICE 'Pelicula %: %', counter, movie_title;
+        EXIT WHEN counter = 4;
     END LOOP;
+    RAISE NOTICE 'Se encontraron % películas que comienzan con E.', counter;  -- Mostrar el resultado
+    END $$;
 
     RAISE NOTICE 'Se encontraron % películas que comienzan con E.', counter;  -- Mostrar el resultado
     END $$;
@@ -185,17 +179,19 @@
     -- WHILE
     DO $$
     DECLARE
-    customer_id INT := 1;
+    v_customer_id INT := 1;
     rental_count INT := 0;
     max_rentals INT := 5;
     BEGIN
     SELECT COUNT(*) INTO rental_count
     FROM rental
-    WHERE customer_id = customer_id;
+    WHERE rental.customer_id = v_customer_id;
     WHILE rental_count < max_rentals LOOP
-        RAISE NOTICE 'El cliente % tiene % alquileres. Aún no ha alcanzado el límite.', customer_id, rental_count;
+        RAISE NOTICE 'El cliente % tiene % alquileres. Aún no ha alcanzado el límite.', v_customer_id, rental_count;
         rental_count := rental_count + 1;
     END LOOP;
+    RAISE NOTICE 'El cliente % ha alcanzado el límite de % alquileres.', v_customer_id, rental_count;
+    END $$;
 
     RAISE NOTICE 'El cliente % ha alcanzado el límite de % alquileres.', customer_id, rental_count;
     END $$;
