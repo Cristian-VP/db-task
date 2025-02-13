@@ -332,11 +332,76 @@
     -- Drop Function
     DROP FUNCTION get_movie_title(INT);
 
+-- EXCEPTION HANDLING
+DO $$
+DECLARE
+    v_film_title TEXT;
+BEGIN
+    BEGIN
+        SELECT title INTO v_film_title
+        FROM film
+        WHERE film_id = 99999; -- ID inexistente
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RAISE NOTICE 'Error: No se encontró la película con el ID especificado.';
+        WHEN OTHERS THEN
+            RAISE NOTICE 'Error desconocido: %', SQLERRM;
+    END;
+    RAISE NOTICE 'Finalizando bloque de manejo de excepciones.';
+END $$;
 
+-- STORED PROCEDURES
+CREATE OR REPLACE PROCEDURE add_movie(
+    p_title TEXT,
+    p_release_year INT,
+    p_language_id INT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF p_title IS NULL OR p_release_year IS NULL OR p_language_id IS NULL THEN
+        RAISE EXCEPTION 'Error: No se pueden insertar valores nulos en la película.';
+    END IF;
+    INSERT INTO film (title, release_year, language_id)
+    VALUES (p_title, p_release_year, p_language_id);
+    RAISE NOTICE 'Película % añadida con éxito en el año % y con idioma ID %.', p_title, p_release_year, p_language_id;
+END;
+$$;
 
+-- CURSORS
+DO $$
+DECLARE
+    cur CURSOR FOR SELECT title FROM film WHERE release_year > 2000;
+    v_title TEXT;
+    counter INT := 0;
+BEGIN
+    OPEN cur;
+    LOOP
+        FETCH cur INTO v_title;
+        EXIT WHEN NOT FOUND;
+        counter := counter + 1;
+        RAISE NOTICE 'Película %: %', counter, v_title;
+    END LOOP;
+    CLOSE cur;
+    RAISE NOTICE 'Se procesaron un total de % películas.', counter;
+END $$;
 
+-- TRIGGERS
+CREATE OR REPLACE FUNCTION check_budget()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.budget > 100000 THEN
+        RAISE EXCEPTION 'El presupuesto de la película % excede el límite permitido de 100,000.', NEW.title;
+    ELSIF NEW.budget < 5000 THEN
+        RAISE NOTICE 'Advertencia: El presupuesto de la película % es menor de 5,000, considera revisarlo.', NEW.title;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
+CREATE TRIGGER before_insert_film
+BEFORE INSERT ON film
+FOR EACH ROW
+EXECUTE FUNCTION check_budget();
 
-
-
-
+RAISE NOTICE 'Trigger de validación de presupuesto creado con éxito.';
