@@ -199,67 +199,79 @@
 -- User-defined functions
 
     -- CREATE FUNCTION
-    CREATE FUNCTION get_movie_title(film_id INT)
-    RETURNS TEXT
-    LANGUAGE plpgsql;
+    CREATE OR REPLACE FUNCTION get_movie_title(film_id INT)
+    	RETURNS TEXT
+   		LANGUAGE plpgsql
     AS $$
     DECLARE
-    movie_title TEXT;
+    	movie_title TEXT;
     BEGIN
-    SELECT title INTO movie_title
-    FROM film
-    WHERE film_id = film_id;
+    	SELECT title INTO movie_title
+   		FROM film
+    	WHERE film.film_id = get_movie_title.film_id;
 
-    RETURN movie_title;
+    	RETURN movie_title;
     END;
     $$;
 
     -- Function Parameter Modes
         -- IN
         CREATE FUNCTION get_movie_count(IN category_name TEXT)
-        RETURNS INT
-        LANGUAGE plpgsql;
+            RETURNS INT
+            LANGUAGE plpgsql;
         AS $$
         DECLARE
-        movie_count INT;
+            movie_count INT;
         BEGIN
-        SELECT COUNT(*)
-        INTO movie_count
-        FROM film_category fc
-        JOIN category c ON fc.category_id = c.category_id
-        WHERE c.name = category_name;
+            SELECT COUNT(*)
+            INTO movie_count
+            FROM film_category fc
+            JOIN category c ON fc.category_id = c.category_id
+            WHERE c.name = category_name;
 
-        RETURN movie_count;
-        RAISE NOTICE 'El numero de las peliculas % categorizadas como: %', movie_count, category_name;
+            RAISE NOTICE 'El numero de las peliculas % categorizadas como: %', movie_count, category_name;
+
+            RETURN movie_count;
         END;
-        $$
+        $$;
 
         -- OUT
-        CREATE FUNCTION get_rental_info(OUT rental_id INT, OUT film_id INT, OUT customer_id INT)
+        CREATE OR REPLACE FUNCTION get_rental_info(
+            OUT rental_id INT,
+            OUT film_id INT,
+            OUT customer_id INT
+        )
         LANGUAGE plpgsql
         AS $$
         BEGIN
-        SELECT r.rental_id, r.film_id, r.customer_id
-        INTO rental_id, film_id, customer_id
-        FROM rental r
-        LIMIT 1;
+            -- Seleccionar la primera fila de la tabla rental y obtener el film_id desde inventory
+            SELECT r.rental_id, i.film_id, r.customer_id
+            INTO rental_id, film_id, customer_id
+            FROM rental r
+            JOIN inventory i ON r.inventory_id = i.inventory_id
+            LIMIT 1;
+
+            RETURN;
         END;
         $$;
 
         -- IN OUT
-        CREATE OR REPLACE FUNCTION update_rental_status(INOUT rental_id INT, IN new_status TEXT)
-        LANGUAGE plpgsql;
+
+        CREATE OR REPLACE FUNCTION update_rental_return_date(INOUT rental_id INT, IN new_return_date TIMESTAMP)
+        LANGUAGE plpgsql
         AS $$
         BEGIN
-        UPDATE rental
-        SET status = new_status
-        WHERE rental_id = rental_id;
-        RAISE NOTICE 'El estado del alquiler % ha sido actualizado a %', rental_id, new_status;
+            -- Actualizar la fecha de devolución
+            UPDATE rental
+            SET return_date = new_return_date
+            WHERE rental_id = update_rental_return_date.rental_id;
+
+            RETURN;
         END;
-        $$
+        $$;
 
     -- Function Overloading
-    CREATE FUNCTION get_movie_info(film_id INT)
+    CREATE OR REPLACE FUNCTION get_movie_info(film_id INT)
     RETURNS TEXT
     LANGUAGE plpgsql
     AS $$
@@ -268,49 +280,54 @@
     BEGIN
         SELECT title INTO movie_info
         FROM film
-        WHERE film_id = film_id;
+        WHERE film.film_id = get_movie_info.film_id;  -- Avoid ambiguity
 
         RETURN movie_info;
     END;
-    $$ LANGUAGE plpgsql;
+    $$;
 
-    CREATE FUNCTION get_movie_info(film_title TEXT)
-    RETURNS TEXT AS $$
+    -- Function Overloading: Fetch movie info by film_title
+    CREATE OR REPLACE FUNCTION get_movie_info(film_title TEXT)
+    RETURNS TEXT
+    LANGUAGE plpgsql
+    AS $$
     DECLARE
         movie_info TEXT;
     BEGIN
         SELECT title INTO movie_info
         FROM film
-        WHERE title = film_title;
+        WHERE film.title = get_movie_info.film_title;
 
         RETURN movie_info;
     END;
     $$;
 
     -- Function That Returns a Table
-    CREATE FUNCTION get_all_movies()
-    RETURNS TABLE(film_id INT, title TEXT)
+    CREATE OR REPLACE FUNCTION get_all_movies()
+    RETURNS TABLE(film_id INT, title VARCHAR(255))  -- Cambiar de TEXT a VARCHAR(255)
     LANGUAGE plpgsql
     AS $$
     BEGIN
-    RETURN QUERY
-    SELECT film_id, title
-    FROM film;
+        RETURN QUERY
+        SELECT film.film_id, film.title
+        FROM film;
     END;
     $$;
 
+
     -- Returns SetOf
-    CREATE FUNCTION get_rentals_by_customer(customer_id INT)
+    CREATE OR REPLACE FUNCTION get_rentals_by_customer(customer_id INT)
     RETURNS SETOF rental
     LANGUAGE plpgsql
     AS $$
     BEGIN
-    RETURN QUERY
-    SELECT *
-    FROM rental
-    WHERE customer_id = customer_id;
+        RETURN QUERY
+        SELECT *
+        FROM rental
+        WHERE rental.customer_id = get_rentals_by_customer.customer_id;  -- Usamos "rental.customer_id" para evitar ambigüedad
     END;
     $$;
+
 
     -- Drop Function
     DROP FUNCTION get_movie_title(INT);
