@@ -3,8 +3,8 @@
     DO $$
     <<outer_block>>
     DECLARE
-        film_name CONSTANT varchar(50);
-        film_year time := clock_timestamp();
+        film_name varchar(50);
+        film_year CONSTANT time := clock_timestamp();
         money_spend numeric(10,2) := 56000.54;
     BEGIN
         film_name = split_part('Frankenstain Rigoberto', ' ',1);
@@ -542,118 +542,3 @@ AFTER DELETE ON film
 FOR EACH ROW
 EXECUTE FUNCTION after_delete_log();
 
-/* EXAMEN */
-
-/*PROCEDURE*/
-
-/*
-Los procedimientos pueden manejar transacciones internamente, lo que significa que se puede utilizar comandos como commit o rollback.
-Se utilizan para ejecutar operaciones que no necesariamente devuelven un resultado, como inserciones, actualizaciones, eliminaciones o tareas complejas que involucran múltiples pasos
-En este caso, el procedure creado transfer, actualiza la cuenta de un id que da "sender" y otro que recibe "receive" una cantidad específica "amount" de dinero.
-En primer lugar subtrae la coantidad de la cuenta sender y posteriormente acualiza con la misma cantidad la cuenta que recive.
- */
-
-create or replace procedure transfer(
-   sender int,
-   receiver int,
-   amount dec
-)
-language plpgsql
-as $$
-begin
-    -- subtracting the amount from the sender's account
-    update accounts
-    set balance = balance - amount
-    where id = sender;
-    -- adding the amount to the receiver's account
-    update accounts
-    set balance = balance + amount
-    where id = receiver;
-    commit;
-end;
-$$;
-
-
-/*CURSORS*/
-
-/*CURSORS nos permite iterar a través de una consulta secuencialmente fila por fila.
-En este caso se declara una funcion  que utiliza un CURSOR para iterar la tabla FILM y devolver un conjunto de registros con los títulos y años de lanzamiento de las películas.
-
-Para ello se utiliza un objeto Cursor film_cursor que almacenara los datos en una variable de tipo RECORD film_record. Por cada fila se retornará
-su título p_title y su año de lanzamiento p_release_year. Para iterar cobre el objeto cursor se utiliza un bucle que finaliza si NEXT no enuentra
-mas valores para  title y release_year declarados al inicio, es decir cuando no hay más filas.*/
-
-CREATE OR REPLACE FUNCTION fetch_film_titles_and_years(
-   OUT p_title VARCHAR(255),
-   OUT p_release_year INTEGER
-)
-RETURNS SETOF RECORD AS
-$$
-DECLARE
-    film_cursor CURSOR FOR
-        SELECT title, release_year
-        FROM film;
-    film_record RECORD;
-BEGIN
-    -- Open cursor
-    OPEN film_cursor;
-    -- Fetch rows and return
-    LOOP
-        FETCH NEXT FROM film_cursor INTO film_record;
-        EXIT WHEN NOT FOUND;
-        p_title = film_record.title;
-        p_release_year = film_record.release_year;
-        RETURN NEXT;
-    END LOOP;
-    -- Close cursor
-    CLOSE film_cursor;
-END;
-$$
-LANGUAGE PLPGSQL;
-
-
-/* TRIGGERS */
-
-/*Triggers
-Las funciones que utilizan TRIGGER, se invocan automáticamente cuando un evento acontece en una tabla, tales como: INSERT, UPDATE, DELETE o TRUNCATE.
-
-En este caso la funcion log_last_name_changes() almacena el id, el apellido y el momento (dentro de la tabla employee_audits) cuando
-last_name de la tabla employees se actualiza, la palabra reservada NEW representa el nuevo dato y OLD el dato antes de actualizarse.
-Para que la función se invoque automáticamente ante un evento  debe ser vinculada a un TRIGGER explicito en este caso last_name_chages, ejecuta
-en este caso la funcion last_name_changes.
- */
-
-
-
-CREATE OR REPLACE FUNCTION log_last_name_changes()
-  RETURNS TRIGGER
-  LANGUAGE PLPGSQL
-  AS
-$$
-BEGIN
-	IF NEW.last_name <> OLD.last_name THEN
-		 INSERT INTO employee_audits(employee_id,last_name,changed_on)
-		 VALUES(OLD.id,OLD.last_name,now());
-	END IF;
-	RETURN NEW;
-END;
-$$
-
-
-CREATE TRIGGER last_name_changes
-  BEFORE UPDATE
-  ON employees
-  FOR EACH ROW
-  EXECUTE PROCEDURE log_last_name_changes();
-
-
-
- /*
-nested loops
-[19:19] Francisco Javier Rosselló Jerónimo
-raise notice
-[19:19] Francisco Javier Rosselló Jerónimo
-outer loop inner loop raise notice print the output
-[19:19] Francisco Javier Rosselló Jerónimo
-overloading
-*/
